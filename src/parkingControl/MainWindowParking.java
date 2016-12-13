@@ -20,6 +20,7 @@ public class MainWindowParking {
 	private JFrame frmMainParking;
 
 	private DBMParking dbm = new DBMParking();
+	private PosPrinter pp = new PosPrinter();
 	private ChargeCalculator chargeCalculator = new ChargeCalculator(dbm);
 	private JTable tblCurrentVehicles;
 	/**
@@ -61,7 +62,8 @@ public class MainWindowParking {
 				DialogInsertVehicle d = new DialogInsertVehicle();
 				ParkedVehicle v = d.showDialog();
 				if(v != null){
-					dbm.insertVehicle(v);			
+					dbm.insertVehicle(v);	
+					pp.printEntryTicket(v);
 				}
 				refreshTable();
 			}
@@ -79,10 +81,12 @@ public class MainWindowParking {
 					ParkedVehicle v = dbm.getVehicleById(id);
 					ParkedVehicleHistory hv = chargeCalculator.getVehicleWithPrice(v);
 					dbm.deleteVehicle(hv);
+					pp.printReceipt(hv);
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "Seleccione un vehiculo de la tabla de vehiculos");					
 				}
+				refreshTable();
 			}
 		});
 		bnCharge.setBounds(309, 323, 179, 25);
