@@ -61,7 +61,14 @@ public static long compareTwoTimeStamps(java.sql.Timestamp currentTime, java.sql
 	return diffMinutes;
 }
 
-public String formatMillis(long millis){
+public static String getVehicleTimeDifference(ParkedVehicleHistory v){
+	long milliseconds1 = v.getEntryTime().getTime();
+	long milliseconds2 = v.getDepartureTime().getTime();
+	long millis = milliseconds2 - milliseconds1;
+	return formatMillis(millis);
+}
+
+public static String formatMillis(long millis){
 
 	long minute = (millis / (1000 * 60)) % 60;
 	long hour = (millis / (1000 * 60 * 60)) % 24;

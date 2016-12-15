@@ -15,12 +15,23 @@ OutputCompleteListener, ErrorListener{
 	boolean buttonStateByCover = true;
 	boolean buttonStateByPaper = true;
 	boolean bCoverSensor = false;
+	SimpleDateFormat tf;
+	SimpleDateFormat df;
 
 //	A maximum of 2 line widths will be considered
 	public final int MAX_LINE_WIDTHS = 2;
 	
+	private void printHeader() throws JposException{
+		ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Parqueo Shalom     \n");
+		ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Shalom Aleichem SAPAJ S.A.\n");
+		ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Cedula juridica: 3-101-670604\n");	
+		ptr.setRecLineSpacing(ptr.getRecLineHeight());
+	}
+	
 	public PosPrinter(){
 		ptr = (POSPrinterControl114)new POSPrinter();
+		tf = new SimpleDateFormat("hh:mm a");
+		df = new SimpleDateFormat("dd/MM/yyyy");
 		// JavaPOS's code for Step10
 		// Set StatusUpdateEvent listener
 		ptr.addStatusUpdateListener(this);
@@ -41,7 +52,8 @@ OutputCompleteListener, ErrorListener{
 
 		}
 		catch(JposException ex){
-			JOptionPane.showMessageDialog(null, "This device has not been registered, or cannot use.",
+			JOptionPane.showMessageDialog(null, "Error de impresora."
+					+ "\n Revise que este conectada.",
 					"",JOptionPane.WARNING_MESSAGE);
 			//Nothing can be used.
 			return;
@@ -54,8 +66,11 @@ OutputCompleteListener, ErrorListener{
 			bCoverSensor = ptr.getCapCoverSensor();
 		}
 		catch(JposException ex){
-			JOptionPane.showMessageDialog(null, "Fails to get the exclusive access for the device.",
+			JOptionPane.showMessageDialog(null, "Solo puede abrir una aplicacion a la vez.\n"
+					+ "Cierre todas las ventanas e intente de nuevo. \n"
+					+ "Asegurese que la impresora este conectada para iniciar la aplicacion.",
 					"",JOptionPane.WARNING_MESSAGE);
+			System.exit(1);
 			//Nothing can be used.
 			return;
 		}
@@ -65,7 +80,7 @@ OutputCompleteListener, ErrorListener{
 			ptr.setDeviceEnabled(true);
 		}
 		catch(JposException ex){
-			JOptionPane.showMessageDialog(null, "Now the device is disable to use.",
+			JOptionPane.showMessageDialog(null, "Interrupcion del dispositivo impresora",
 					"",JOptionPane.WARNING_MESSAGE);
 			//Nothing can be used.
 			return;
@@ -74,8 +89,6 @@ OutputCompleteListener, ErrorListener{
 		
 	
 	public void printReceipt(ParkedVehicleHistory v){
-
-		String time = "\n";
 
 		// JavaPOS's code for Step10
 		try{
@@ -87,21 +100,17 @@ OutputCompleteListener, ErrorListener{
 					try{
 						//Batch processing mode
 						ptr.transactionPrint(POSPrinterConst.PTR_S_RECEIPT, POSPrinterConst.PTR_TP_TRANSACTION);
-
+						
 						//Enter the sideway mode.
 						//ptr.rotatePrint(POSPrinterConst.PTR_S_RECEIPT, POSPrinterConst.PTR_RP_LEFT90);
-						SimpleDateFormat tf = new SimpleDateFormat("HH:mm");
-						SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Parqueo Shalom     \n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Cedula juridica:    \n");
-						ptr.setRecLineSpacing(ptr.getRecLineHeight());
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "       \n");
+
+						this.printHeader();
 						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|2C Placa: \n \u001b|2C" + v.getPlate() + "\n\n");
 						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|2C Cobro (CRC): \n \u001b|2C" + v.getCharge() + "\n");
 						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "       \n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C Fecha: " + df.format(v.getEntryTime()) + "\n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C Hora entrada: " + tf.format(v.getEntryTime()) + "\n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C Hora salida:  " + tf.format(v.getDepartureTime()) + "\n");
+						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Fecha: " + df.format(v.getEntryTime()) + "\n");
+						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Hora entrada: " + tf.format(v.getEntryTime()) + "\n");
+						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Hora salida:  " + tf.format(v.getDepartureTime()) + "\n");
 						break;
 					}
 					catch(JposException ex){
@@ -132,7 +141,7 @@ OutputCompleteListener, ErrorListener{
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(null, "Cannot use a Receipt Stateion.",
+				JOptionPane.showMessageDialog(null, "Error de impresora",
 						"",JOptionPane.WARNING_MESSAGE);
 				return;
 			}
@@ -156,7 +165,8 @@ OutputCompleteListener, ErrorListener{
 			ptr.setRecLineSpacing(orgSpacing);
 		}
 		catch(JposException jex){
-			JOptionPane.showMessageDialog(null, "Cannot use a POS Printer.\n" ,
+			JOptionPane.showMessageDialog(null, "Revise la impresora.\n"
+					+ "No se pudo iniciar" ,
 					"Printed receipt",JOptionPane.WARNING_MESSAGE);
 		}
 		// JavaPOS's code for Step10--END		
@@ -177,15 +187,12 @@ OutputCompleteListener, ErrorListener{
 
 						//Enter the sideway mode.
 						//ptr.rotatePrint(POSPrinterConst.PTR_S_RECEIPT, POSPrinterConst.PTR_RP_LEFT90);
-						SimpleDateFormat tf = new SimpleDateFormat("HH:mm");
-						SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Parqueo Shalom     \n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Cedula juridica:    \n");
+						this.printHeader();
 						ptr.setRecLineSpacing(ptr.getRecLineHeight());
 						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "       \n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|2C Placa: \n \u001b|2C" + v.getPlate() + "\n\n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C Fecha: " + df.format(v.getEntryTime()) + "\n");
-						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C Hora entrada: " + tf.format(v.getEntryTime()) + "\n\n\n");
+						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|2C Placa: " + v.getPlate() + "\n\n");
+						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Fecha: " + df.format(v.getEntryTime()) + "\n");
+						ptr.printNormal(POSPrinterConst.PTR_S_RECEIPT, "\u001b|1C   Hora entrada: " + tf.format(v.getEntryTime()) + "\n\n\n");
 						break;
 					}
 					catch(JposException ex){
@@ -216,7 +223,7 @@ OutputCompleteListener, ErrorListener{
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(null, "Cannot use a Receipt Stateion.",
+				JOptionPane.showMessageDialog(null, "Error de impresora",
 						"",JOptionPane.WARNING_MESSAGE);
 				return;
 			}
@@ -240,7 +247,7 @@ OutputCompleteListener, ErrorListener{
 			ptr.setRecLineSpacing(orgSpacing);
 		}
 		catch(JposException jex){
-			JOptionPane.showMessageDialog(null, "Cannot use a POS Printer.\n" ,
+			JOptionPane.showMessageDialog(null, "Impresora no encontrada\n" ,
 					"Printed receipt",JOptionPane.WARNING_MESSAGE);
 		}
 		// JavaPOS's code for Step10--END		

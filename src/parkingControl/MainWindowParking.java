@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
+import java.awt.Font;
 
 public class MainWindowParking {
 
@@ -52,6 +53,7 @@ public class MainWindowParking {
 	 */
 	private void initialize() {
 		frmMainParking = new JFrame();
+		frmMainParking.setTitle("Parqueo Shalom");
 		frmMainParking.setBounds(100, 100, 633, 424);
 		frmMainParking.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmMainParking.getContentPane().setLayout(null);
@@ -80,8 +82,13 @@ public class MainWindowParking {
 					int id = Integer.parseInt((model.getValueAt(row, 4).toString()));
 					ParkedVehicle v = dbm.getVehicleById(id);
 					ParkedVehicleHistory hv = chargeCalculator.getVehicleWithPrice(v);
-					dbm.deleteVehicle(hv);
-					pp.printReceipt(hv);
+					DialogChargePrice dialogCharge = new DialogChargePrice(hv);
+					dialogCharge.setModal(true);
+					int res = dialogCharge.showDialog();
+					if(res == 1){
+						dbm.deleteVehicle(hv);
+						pp.printReceipt(hv);
+					}
 				}
 				else{
 					JOptionPane.showMessageDialog(null, "Seleccione un vehiculo de la tabla de vehiculos");					
@@ -106,6 +113,7 @@ public class MainWindowParking {
 		frmMainParking.getContentPane().add(scrollPane);
 		
 		tblCurrentVehicles = new JTable();
+		tblCurrentVehicles.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		tblCurrentVehicles.setSelectionModel(new ForcedSelectionModel());
 		scrollPane.setViewportView(tblCurrentVehicles);
 		refreshTable();

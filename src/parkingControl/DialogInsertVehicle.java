@@ -59,11 +59,11 @@ public class DialogInsertVehicle extends JDialog {
 		rdbtnMotorcycle.setBounds(191, 173, 149, 23);
 		contentPanel.add(rdbtnMotorcycle);
 		
-		JRadioButton rdbtnHeavy = new JRadioButton("pesado");
-		rdbtnHeavy.setBounds(373, 173, 149, 23);
-		contentPanel.add(rdbtnHeavy);
-		ButtonGroup types = new ButtonGroup();
-		types.add(rdbtnHeavy);
+		//JRadioButton rdbtnHeavy = new JRadioButton("pesado");
+		//rdbtnHeavy.setBounds(373, 173, 149, 23);
+	//	contentPanel.add(rdbtnHeavy);
+		final ButtonGroup types = new ButtonGroup();
+//		types.add(rdbtnHeavy);
 		types.add(rdbtnLight);
 		types.add(rdbtnMotorcycle);
 		
