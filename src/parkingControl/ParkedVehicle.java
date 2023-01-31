@@ -4,8 +4,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-import com.sun.xml.internal.ws.addressing.EndpointReferenceUtil;
-
 public class ParkedVehicle {
 	protected String plate;
 	protected String vehicleType;
