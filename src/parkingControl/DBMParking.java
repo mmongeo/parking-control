@@ -193,7 +193,6 @@ public class DBMParking {
 		ResultSetMetaData rsmd;
 		try {
 			rsmd = (ResultSetMetaData) rs.getMetaData();
-			System.out.println("querying SELECT * FROM XXX");
 			int columnsNumber = rsmd.getColumnCount();
 			while (rs.next()) {
 				for (int i = 1; i <= columnsNumber; i++) {
